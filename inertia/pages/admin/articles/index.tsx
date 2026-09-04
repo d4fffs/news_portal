@@ -45,7 +45,7 @@ export default function Articles({ articles }: Props) {
                   {article.title}
                 </strong>
                 <span style={{ fontSize: 12, color: 'var(--muted)' }}>
-                  {article.category?.name ? `📂 ${article.category.name}` : 'Tanpa kategori'} ·{' '}
+                  {article.category?.name ? `${article.category.name}` : 'Tanpa kategori'} ·{' '}
                   {article.author?.fullName || article.author?.email || 'Tanpa author'} ·{' '}
                   {article.publishedAt
                     ? `Terbit ${new Date(article.publishedAt).toLocaleDateString('id-ID')}`

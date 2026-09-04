@@ -7,19 +7,9 @@ export default function Login() {
 
   return (
     <div className="form-container">
-      <button
-        type="button"
-        className="article-back-link"
-        onClick={() => {
-          if (window.history.length > 1) {
-            window.history.back()
-          } else {
-            window.location.href = '/'
-          }
-        }}
-      >
+      <Link route="home" className="article-back-link">
         ← Kembali
-      </button>
+      </Link>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <div
           style={{
@@ -76,7 +66,7 @@ export default function Login() {
                 className="button"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Masuk Sekarang →
+                Masuk
               </button>
             </div>
           </>

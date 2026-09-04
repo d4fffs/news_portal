@@ -168,7 +168,7 @@ export default function Navbar({
 
 function FormLogout() {
   return (
-    <Form route="session.destroy" className="inline-form">
+    <Form route="session.destroy" method="post" className="inline-form">
       <CsrfField />
       <button type="submit" className="subscribe-btn">
         Keluar

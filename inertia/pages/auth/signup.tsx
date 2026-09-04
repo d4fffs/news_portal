@@ -98,7 +98,7 @@ export default function Signup() {
                 className="button"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Buat Akun Sekarang →
+                Daftar
               </button>
             </div>
           </>
