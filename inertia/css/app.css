@@ -1416,6 +1416,11 @@ main {
   color: var(--brand);
 }
 
+.admin-sidebar nav a.active {
+  color: var(--brand);
+  border-bottom: 2px solid var(--brand);
+}
+
 .admin-page h1 {
   font-size: 32px;
   margin: 32px 0 8px;
@@ -1888,9 +1893,18 @@ label {
 .admin-sidebar nav a:hover,
 .admin-sidebar nav a:focus-visible,
 .admin-sidebar nav a:active {
-  background: #1e293b;
-  color: #ffffff !important;
-  border-color: #334155;
+  background: transparent;
+  color: var(--brand) !important;
+  border-color: transparent;
+}
+
+.admin-sidebar nav a.active {
+  background: transparent;
+  color: var(--brand) !important;
+  border-color: transparent;
+  border-bottom: 2px solid var(--brand);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .admin-page .form-container {
