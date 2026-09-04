@@ -1,13 +1,15 @@
 import Article from '#models/article'
 import ArticleRating from '#models/article_rating'
 import Category from '#models/category'
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class PublicController {
   async home({ inertia, request }: HttpContext) {
     const query = request.input('q', '').trim()
     const searchPattern = `%${query}%`
-    const [featured, latest, categories, trending] = await Promise.all([
+    const oneHourAgo = DateTime.now().minus({ hours: 1 })
+    const [featured, latest, recent, articles, categories, trending] = await Promise.all([
       Article.query()
         .where('status', 'published')
         .if(query, (builder) =>
@@ -36,6 +38,35 @@ export default class PublicController {
         .preload('author')
         .orderBy('publishedAt', 'desc')
         .paginate(1, 100),
+      Article.query()
+        .where('status', 'published')
+        .where('createdAt', '>=', oneHourAgo.toSQL()!)
+        .if(query, (builder) =>
+          builder.where((search) =>
+            search
+              .whereRaw('title LIKE ?', [searchPattern])
+              .orWhereRaw('excerpt LIKE ?', [searchPattern])
+              .orWhereRaw('content LIKE ?', [searchPattern])
+          )
+        )
+        .preload('category')
+        .preload('author')
+        .orderBy('createdAt', 'desc'),
+      Article.query()
+        .where('status', 'published')
+        .where('createdAt', '<', oneHourAgo.toSQL()!)
+        .if(query, (builder) =>
+          builder.where((search) =>
+            search
+              .whereRaw('title LIKE ?', [searchPattern])
+              .orWhereRaw('excerpt LIKE ?', [searchPattern])
+              .orWhereRaw('content LIKE ?', [searchPattern])
+          )
+        )
+        .preload('category')
+        .preload('author')
+        .orderBy('createdAt', 'desc')
+        .paginate(request.input('page', 1), 9),
       Category.query().orderBy('name'),
       Article.query()
         .where('status', 'published')
@@ -52,6 +83,8 @@ export default class PublicController {
     return inertia.render('home', {
       featured: featured ? (featured.serialize() as any) : null,
       latest: latest.serialize() as any,
+      recent: recent.map((article) => article.serialize()) as any,
+      articles: articles.serialize() as any,
       categories,
       trending: trending.map((article) => ({
         ...article.serialize(),

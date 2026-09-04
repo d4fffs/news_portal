@@ -25,17 +25,10 @@ export function AdminArticleSkeleton() {
 export function HomeSkeleton() {
   return (
     <div className="home-skeleton" aria-label="Memuat artikel">
-      <div className="home-skeleton-hero">
-        <ArticleSkeleton featured />
-        <div className="home-skeleton-side">
-          <ArticleSkeleton />
-          <ArticleSkeleton />
-        </div>
-      </div>
       <div className="home-skeleton-content">
         <div className="skeleton skeleton-heading" />
         <div className="article-grid">
-          <ArticleSkeleton featured />
+          <ArticleSkeleton />
           <ArticleSkeleton />
           <ArticleSkeleton />
         </div>

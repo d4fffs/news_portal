@@ -73,7 +73,6 @@ export default function Navbar({
             <span className="brand-mark">K</span>
             <span className="brand-text">
               Berita Kita
-              <small>Portal Berita Terkini</small>
             </span>
           </Link>
 

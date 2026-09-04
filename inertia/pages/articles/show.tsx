@@ -1,5 +1,5 @@
 import { Form, Link } from '@adonisjs/inertia/react'
-import { usePage } from '@inertiajs/react'
+import { router, usePage } from '@inertiajs/react'
 import CsrfField from '~/components/csrf_field'
 
 type Props = {
@@ -57,10 +57,11 @@ export default function ArticleShow({ article, rating }: Props) {
         type="button"
         className="article-back-link"
         onClick={() => {
+          sessionStorage.setItem('refresh-home-after-back', '1')
           if (window.history.length > 1) {
             window.history.back()
           } else {
-            window.location.href = '/'
+            router.visit('/')
           }
         }}
       >

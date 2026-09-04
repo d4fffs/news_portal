@@ -356,7 +356,15 @@ main {
 }
 
 .portal-page {
-  padding: 32px 0 60px;
+  padding: 12px 0 60px;
+}
+
+.portal-page > .content-layout {
+  margin-top: 0;
+}
+
+.portal-page > .content-layout .section-heading:first-child {
+  margin-top: 12px;
 }
 
 .portal-page.is-searching {

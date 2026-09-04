@@ -2,6 +2,7 @@ import { Link } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
 import ArticleCard from '~/components/article_card'
 import { HomeSkeleton } from '~/components/loading_skeleton'
+import Pagination from '~/components/pagination'
 import { useEffect, useState } from 'react'
 
 type Article = {
@@ -18,38 +19,46 @@ type Article = {
 type Props = {
   featured: any
   latest: { data: Article[] }
+  recent: Article[]
+  articles: { data: Article[]; meta: any }
   categories: any[]
   trending?: Article[]
   query?: string
 }
 
 export default function Home({
-  featured,
   latest,
+  recent,
+  articles,
   query = '',
   trending: trendingArticles = [],
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [isFiltering, setIsFiltering] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const removeStartListener = router.on('start', () => setIsLoading(true))
     const removeFinishListener = router.on('finish', () => setIsLoading(false))
+    const refreshAfterHistoryBack = () => {
+      if (sessionStorage.getItem('refresh-home-after-back') !== '1') return
+      sessionStorage.removeItem('refresh-home-after-back')
+      router.reload()
+    }
+
+    window.addEventListener('pageshow', refreshAfterHistoryBack)
 
     return () => {
       removeStartListener()
       removeFinishListener()
+      window.removeEventListener('pageshow', refreshAfterHistoryBack)
     }
   }, [])
 
   useEffect(() => {
     const handleCategoryChange = (event: Event) => {
       const category = (event as CustomEvent<string | null>).detail
-      setIsFiltering(true)
       setSelectedCategory(category)
-      window.setTimeout(() => setIsFiltering(false), 180)
     }
 
     window.addEventListener('news-category-change', handleCategoryChange)
@@ -68,23 +77,18 @@ export default function Home({
   const visibleArticles = selectedCategory
     ? latest.data.filter((article) => article.category?.slug === selectedCategory)
     : latest.data
-  const visibleFeatured = selectedCategory
-    ? (visibleArticles.find((article) => article.id === featured?.id) ?? visibleArticles[0])
-    : featured
-  const sideStories = visibleArticles
-    .filter((article) => article.id !== visibleFeatured?.id)
-    .slice(0, 3)
+  const visibleRecent = selectedCategory
+    ? recent.filter((article) => article.category?.slug === selectedCategory)
+    : recent
   const trending = (
     selectedCategory
       ? trendingArticles.filter((article) => article.category?.slug === selectedCategory)
       : trendingArticles
   ).slice(0, 5)
-  const sideStoryIds = sideStories.map((article) => article.id)
-  const mainArticles = visibleArticles.filter(
-    (article) => article.id !== visibleFeatured?.id && !sideStoryIds.includes(article.id)
-  )
-  const featuredMain = mainArticles[0]
-  const restArticles = mainArticles.slice(1)
+  const recentArticles = visibleRecent
+  const olderArticles = selectedCategory
+    ? articles.data.filter((article) => article.category?.slug === selectedCategory)
+    : articles.data
 
   if (isLoading) {
     return (
@@ -102,49 +106,10 @@ export default function Home({
           Mencari berita...
         </div>
       )}
-      {/* Hero Section: used only for the unfiltered homepage */}
-      {!selectedCategory && (
-        <section className={`hero-section ${isFiltering ? 'is-filtering' : ''}`}>
-          {visibleFeatured ? (
-            <Link
-              route="articles.show"
-              routeParams={{ slug: visibleFeatured.slug }}
-              className="hero-main"
-            >
-              {visibleFeatured.thumbnail ? (
-                <img src={visibleFeatured.thumbnail} alt={visibleFeatured.title} />
-              ) : (
-                <div className="image-placeholder">Berita Utama</div>
-              )}
-              <div className="hero-overlay">
-                {visibleFeatured.category && (
-                  <span className="tag">{visibleFeatured.category.name}</span>
-                )}
-                <h1>{visibleFeatured.title}</h1>
-                <p>{visibleFeatured.excerpt}</p>
-                <div className="meta">
-                  <span>Oleh Redaksi</span>
-                  <span className="meta-dot" />
-                  <span>5 menit baca</span>
-                </div>
-              </div>
-            </Link>
-          ) : (
-            <div className="empty-filter-state">Belum ada berita pada kategori ini.</div>
-          )}
-          <div className="hero-side">
-            {sideStories.map((article) => (
-              <ArticleCard key={article.id} article={article} horizontal />
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Content Layout: Main + Sidebar */}
       <div className={`content-layout ${selectedCategory ? 'category-layout' : ''}`}>
         <div className="content-main">
-          {/* Featured Big Article */}
-          {!selectedCategory && featuredMain && (
+          {!selectedCategory && (
             <>
               <section className="section-heading">
                 <div>
@@ -152,12 +117,30 @@ export default function Home({
                 </div>
                 <span className="view-all">{query ? `Hasil untuk "${query}"` : ''}</span>
               </section>
-              <div className="article-grid">
-                <ArticleCard article={featuredMain} featured />
-                {restArticles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
-                ))}
-              </div>
+              {recentArticles.length > 0 ? (
+                <div className="article-grid">
+                  {recentArticles.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-filter-state">Belum ada berita dalam 1 jam terakhir.</div>
+              )}
+              <section className="section-heading article-section-heading">
+                <div>
+                  <h2>Artikel</h2>
+                </div>
+              </section>
+              {olderArticles.length > 0 ? (
+                <div className="article-grid">
+                  {olderArticles.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-filter-state">Belum ada artikel lama.</div>
+              )}
+              <Pagination meta={articles.meta} />
             </>
           )}
           {selectedCategory && (
