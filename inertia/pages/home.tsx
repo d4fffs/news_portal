@@ -126,7 +126,10 @@ export default function Home({
               ) : (
                 <div className="empty-filter-state">Belum ada berita dalam 1 jam terakhir.</div>
               )}
-              <section className="section-heading article-section-heading">
+              <section
+                id="article-section"
+                className="section-heading article-section-heading"
+              >
                 <div>
                   <h2>Artikel</h2>
                 </div>
@@ -140,7 +143,7 @@ export default function Home({
               ) : (
                 <div className="empty-filter-state">Belum ada artikel lama.</div>
               )}
-              <Pagination meta={articles.meta} />
+              <Pagination meta={articles.meta} scrollTargetId="article-section" />
             </>
           )}
           {selectedCategory && (

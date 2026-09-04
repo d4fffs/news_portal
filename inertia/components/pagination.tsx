@@ -9,7 +9,13 @@ type PaginationMeta = {
   lastPageUrl?: string | null
 }
 
-export default function Pagination({ meta }: { meta?: PaginationMeta }) {
+export default function Pagination({
+  meta,
+  scrollTargetId,
+}: {
+  meta?: PaginationMeta
+  scrollTargetId?: string
+}) {
   if (!meta || meta.lastPage <= 1) return null
 
   const pageUrl = (page: number) => {
@@ -18,10 +24,26 @@ export default function Pagination({ meta }: { meta?: PaginationMeta }) {
     return `${url.pathname}${url.search}`
   }
 
+  const scrollToTarget = () => {
+    if (!scrollTargetId) return
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const target = document.getElementById(scrollTargetId)
+        if (!target) return
+
+        const top = target.getBoundingClientRect().top + window.scrollY - 24
+        window.scrollTo({ top, behavior: 'auto' })
+      })
+    })
+  }
+
   return (
     <nav className="pagination" aria-label="Pagination">
       {meta.currentPage > 1 ? (
-        <Link href={pageUrl(meta.currentPage - 1)}>← Sebelumnya</Link>
+        <Link href={pageUrl(meta.currentPage - 1)} onSuccess={scrollToTarget}>
+          ← Sebelumnya
+        </Link>
       ) : (
         <span>← Sebelumnya</span>
       )}
@@ -29,7 +51,9 @@ export default function Pagination({ meta }: { meta?: PaginationMeta }) {
         Halaman {meta.currentPage} dari {meta.lastPage}
       </strong>
       {meta.currentPage < meta.lastPage ? (
-        <Link href={pageUrl(meta.currentPage + 1)}>Berikutnya →</Link>
+        <Link href={pageUrl(meta.currentPage + 1)} onSuccess={scrollToTarget}>
+          Berikutnya →
+        </Link>
       ) : (
         <span>Berikutnya →</span>
       )}

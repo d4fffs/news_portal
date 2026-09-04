@@ -51,11 +51,6 @@ export default function Footer({ categories = [] }: { categories?: Category[] })
 
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} Berita Kita. Hak Cipta Dilindungi.</span>
-        <div className="footer-bottom-links">
-          <a href="#syarat">Syarat & Ketentuan</a>
-          <a href="#privasi">Privasi</a>
-          <a href="#cookie">Cookie</a>
-        </div>
       </div>
     </footer>
   )
