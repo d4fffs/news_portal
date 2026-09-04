@@ -1,8 +1,23 @@
 import { Link, Form } from '@adonisjs/inertia/react'
+import { router } from '@inertiajs/react'
 import CsrfField from '~/components/csrf_field'
+import { AdminArticleSkeleton } from '~/components/loading_skeleton'
 import Pagination from '~/components/pagination'
+import { useEffect, useState } from 'react'
 type Props = { articles: { data: any[]; meta: any } }
 export default function Articles({ articles }: Props) {
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const removeStartListener = router.on('start', () => setIsLoading(true))
+    const removeFinishListener = router.on('finish', () => setIsLoading(false))
+
+    return () => {
+      removeStartListener()
+      removeFinishListener()
+    }
+  }, [])
+
   return (
     <div className="admin-page">
       <div className="admin-header">
@@ -14,7 +29,13 @@ export default function Articles({ articles }: Props) {
         </Link>
       </div>
 
-      {articles.data.length === 0 ? (
+      {isLoading ? (
+        <div className="admin-list skeleton-list">
+          {Array.from({ length: 6 }, (_, index) => (
+            <AdminArticleSkeleton key={index} />
+          ))}
+        </div>
+      ) : articles.data.length === 0 ? (
         <div
           style={{
             textAlign: 'center',

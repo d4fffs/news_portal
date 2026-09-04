@@ -35,7 +35,7 @@ export default class PublicController {
         .preload('category')
         .preload('author')
         .orderBy('publishedAt', 'desc')
-        .paginate(1, 9),
+        .paginate(1, 100),
       Category.query().orderBy('name'),
       Article.query()
         .where('status', 'published')
@@ -53,7 +53,10 @@ export default class PublicController {
       featured: featured ? (featured.serialize() as any) : null,
       latest: latest.serialize() as any,
       categories,
-      trending: trending.map((article) => article.serialize()) as any,
+      trending: trending.map((article) => ({
+        ...article.serialize(),
+        averageRating: Number(article.$extras.averageRating ?? 0),
+      })) as any,
       query,
     })
   }

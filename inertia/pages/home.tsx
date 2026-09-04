@@ -1,5 +1,7 @@
 import { Link } from '@adonisjs/inertia/react'
+import { router } from '@inertiajs/react'
 import ArticleCard from '~/components/article_card'
+import { HomeSkeleton } from '~/components/loading_skeleton'
 import { useEffect, useState } from 'react'
 
 type Article = {
@@ -30,6 +32,17 @@ export default function Home({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isFiltering, setIsFiltering] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const removeStartListener = router.on('start', () => setIsLoading(true))
+    const removeFinishListener = router.on('finish', () => setIsLoading(false))
+
+    return () => {
+      removeStartListener()
+      removeFinishListener()
+    }
+  }, [])
 
   useEffect(() => {
     const handleCategoryChange = (event: Event) => {
@@ -72,6 +85,14 @@ export default function Home({
   )
   const featuredMain = mainArticles[0]
   const restArticles = mainArticles.slice(1)
+
+  if (isLoading) {
+    return (
+      <div className="portal-page">
+        <HomeSkeleton />
+      </div>
+    )
+  }
 
   return (
     <div className={`portal-page ${isSearching ? 'is-searching' : ''}`}>
@@ -133,7 +154,7 @@ export default function Home({
               </section>
               <div className="article-grid">
                 <ArticleCard article={featuredMain} featured />
-                {restArticles.slice(0, 2).map((article) => (
+                {restArticles.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}
               </div>
