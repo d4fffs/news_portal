@@ -11,7 +11,7 @@ export default function CategoryShow({ category, articles }: Props) {
         <span className="separator">/</span>
         <span>Kategori</span>
       </div>
-      <span className="eyebrow">📂 Kategori</span>
+      <span className="eyebrow">Kategori</span>
       <h1>{category.name}</h1>
       <p>
         Kumpulan berita terbaru dari kategori <strong>{category.name}</strong>. Total{' '}

@@ -414,14 +414,16 @@ main {
 
 .empty-filter-state {
   display: grid;
-  min-height: 260px;
+  width: 100%;
+  min-height: 360px;
   place-items: center;
   padding: 24px;
-  border: 1px dashed var(--line);
-  border-radius: 16px;
-  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #fff1f2 100%);
   color: var(--muted);
   font-weight: 600;
+  text-align: center;
 }
 
 @keyframes category-filter-in {
@@ -837,6 +839,10 @@ main {
   grid-template-columns: 1fr 320px;
   gap: 40px;
   margin-top: 40px;
+}
+
+.content-layout.category-layout {
+  grid-template-columns: 1fr;
 }
 
 .content-main {

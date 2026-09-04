@@ -10,6 +10,7 @@ type Article = {
   thumbnail?: string | null
   category?: { name: string; slug: string } | null
   createdAt?: string
+  averageRating?: number | string | null
 }
 
 type Props = {
@@ -65,7 +66,10 @@ export default function Home({
       ? trendingArticles.filter((article) => article.category?.slug === selectedCategory)
       : trendingArticles
   ).slice(0, 5)
-  const mainArticles = visibleArticles.filter((article) => article.id !== visibleFeatured?.id)
+  const sideStoryIds = sideStories.map((article) => article.id)
+  const mainArticles = visibleArticles.filter(
+    (article) => article.id !== visibleFeatured?.id && !sideStoryIds.includes(article.id)
+  )
   const featuredMain = mainArticles[0]
   const restArticles = mainArticles.slice(1)
 
@@ -116,7 +120,7 @@ export default function Home({
       )}
 
       {/* Content Layout: Main + Sidebar */}
-      <div className="content-layout">
+      <div className={`content-layout ${selectedCategory ? 'category-layout' : ''}`}>
         <div className="content-main">
           {/* Featured Big Article */}
           {!selectedCategory && featuredMain && (
@@ -135,53 +139,55 @@ export default function Home({
               </div>
             </>
           )}
-
-          <section className="section-heading">
-            <div>
-              <span className="eyebrow">🆕 {selectedCategory ? 'Kategori' : 'Terkini'}</span>
-              <h2>{selectedCategory ? `Berita ${selectedCategory}` : 'Berita Terbaru'}</h2>
+          {selectedCategory && (
+            <div className="article-grid uniform-news-grid">
+              {visibleArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
             </div>
-            {query && <span className="view-all">{visibleArticles.length} berita ditemukan</span>}
-          </section>
-          <div className={`article-grid ${selectedCategory ? 'uniform-news-grid' : ''}`}>
-            {visibleArticles.slice(0, 6).map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
+          )}
           {selectedCategory && visibleArticles.length === 0 && (
             <div className="empty-filter-state">Belum ada berita pada kategori ini.</div>
           )}
         </div>
 
         {/* Sidebar */}
-        <aside className="content-sidebar">
-          <div className="sidebar-block">
-            <h3>Trending</h3>
-            <div className="trending-list">
-              {trending.map((article, idx) => (
-                <Link
-                  key={article.id}
-                  route="articles.show"
-                  routeParams={{ slug: article.slug }}
-                  className="trending-item"
-                >
-                  <span className="trending-number">0{idx + 1}</span>
-                  <div>
-                    {article.category && (
-                      <span className="tag" style={{ fontSize: 10, padding: '2px 6px' }}>
-                        {article.category.name}
-                      </span>
-                    )}
-                    <h4 style={{ marginTop: 6 }}>{article.title}</h4>
-                    <div className="meta">
-                      <span>5 menit baca</span>
+        {!selectedCategory && (
+          <aside className="content-sidebar">
+            <div className="sidebar-block">
+              <h3>Trending</h3>
+              <div className="trending-list">
+                {trending.map((article, idx) => (
+                  <Link
+                    key={article.id}
+                    route="articles.show"
+                    routeParams={{ slug: article.slug }}
+                    className="trending-item"
+                  >
+                    <span className="trending-number">0{idx + 1}</span>
+                    <div>
+                      {article.category && (
+                        <span className="tag" style={{ fontSize: 10, padding: '2px 6px' }}>
+                          {article.category.name}
+                        </span>
+                      )}
+                      <h4 style={{ marginTop: 6 }}>{article.title}</h4>
+                      <div className="meta">
+                        <span>
+                          {article.averageRating
+                            ? `${Number(article.averageRating).toFixed(1)} ★`
+                            : 'Belum ada rating'}
+                        </span>
+                        <span className="meta-dot" />
+                        <span>5 menit baca</span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
       </div>
     </div>
   )

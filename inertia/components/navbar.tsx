@@ -110,6 +110,8 @@ export default function Navbar({
                   </Link>
                   <FormLogout />
                 </>
+              ) : user ? (
+                <FormLogout />
               ) : (
                 <Link route="session.create" className="subscribe-btn">
                   Masuk
@@ -168,7 +170,7 @@ function FormLogout() {
   return (
     <Form route="session.destroy" className="inline-form">
       <CsrfField />
-      <button type="submit" className="search-btn">
+      <button type="submit" className="subscribe-btn">
         Keluar
       </button>
     </Form>

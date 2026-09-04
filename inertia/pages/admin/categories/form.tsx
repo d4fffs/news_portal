@@ -41,7 +41,7 @@ export default function CategoryForm({ category }: Props) {
                   disabled={processing}
                   style={{ flex: 1, justifyContent: 'center' }}
                 >
-                  {processing ? 'Menyimpan...' : category ? '💾 Simpan' : '✨ Buat Kategori'}
+                  {processing ? 'Menyimpan...' : category ? '💾 Simpan' : 'Buat Kategori'}
                 </button>
                 <Link
                   route="admin.categories.index"
