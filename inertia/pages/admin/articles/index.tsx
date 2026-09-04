@@ -82,8 +82,7 @@ export default function Articles({ articles }: Props) {
               <div className="admin-actions">
                 <span className="status">{article.status}</span>
                 <Link
-                  route="admin.articles.edit"
-                  routeParams={{ id: article.id }}
+                  href={`/admin/articles/${article.id}/edit?page=${articles.meta.currentPage}`}
                   style={{ color: 'var(--brand)', fontWeight: 600 }}
                 >
                   Edit

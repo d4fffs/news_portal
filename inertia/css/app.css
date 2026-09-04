@@ -1557,6 +1557,10 @@ main {
   border-bottom: 2px solid var(--brand);
 }
 
+.admin-logout {
+  margin-left: auto;
+}
+
 .admin-page h1 {
   font-size: 32px;
   margin: 32px 0 8px;

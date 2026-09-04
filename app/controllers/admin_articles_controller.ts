@@ -45,12 +45,13 @@ export default class AdminArticlesController {
     response.redirect().toRoute('admin.articles.index')
   }
 
-  async edit({ params, inertia, response }: HttpContext) {
+  async edit({ params, request, inertia, response }: HttpContext) {
     const article = await Article.find(params.id)
     if (!article) return response.notFound()
     return inertia.render('admin/articles/form', {
       article: article.serialize(),
       categories: await Category.query().orderBy('name'),
+      page: Math.max(1, Number.parseInt(request.input('page', '1'), 10) || 1),
     })
   }
 
@@ -71,7 +72,8 @@ export default class AdminArticlesController {
     if (thumbnail.file) await this.storeThumbnail(thumbnail.file, article)
     await article.save()
     session.flash('success', 'Artikel berhasil diperbarui.')
-    response.redirect().toRoute('admin.articles.index')
+    const page = Math.max(1, Number.parseInt(request.input('page', '1'), 10) || 1)
+    response.redirect().withQs({ page }).toRoute('admin.articles.index')
   }
 
   async destroy({ params, response, session }: HttpContext) {

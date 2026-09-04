@@ -1,8 +1,8 @@
 import { Form, Link } from '@adonisjs/inertia/react'
 import { useState } from 'react'
 import CsrfField from '~/components/csrf_field'
-type Props = { article: any; categories: any[] }
-export default function ArticleForm({ article, categories }: Props) {
+type Props = { article: any; categories: any[]; page?: number }
+export default function ArticleForm({ article, categories, page = 1 }: Props) {
   const route = article ? 'admin.articles.update' : 'admin.articles.store'
   const [preview, setPreview] = useState<string | null>(article?.thumbnail ?? null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -27,6 +27,7 @@ export default function ArticleForm({ article, categories }: Props) {
           return (
             <>
               <CsrfField />
+              {article && <input type="hidden" name="page" value={page} />}
               <label>
                 📝 Judul Artikel
                 <input
@@ -73,7 +74,7 @@ export default function ArticleForm({ article, categories }: Props) {
                     <strong>
                       {fileName ?? (preview ? 'Ganti gambar sampul' : 'Pilih gambar sampul')}
                     </strong>
-                    <small>JPG, PNG, WEBP · maksimal 5 MB</small>
+                    <small>JPG, PNG, WEBP, JPEG · maksimal 5 MB</small>
                   </span>
                   <input
                     type="file"

@@ -1,4 +1,4 @@
-import { Link } from '@adonisjs/inertia/react'
+import { Form, Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import CsrfField from '~/components/csrf_field'
 export default function AdminSidebar() {
@@ -29,19 +29,13 @@ export default function AdminSidebar() {
           >
             Kategori
           </Link>
-          <a
-            href="/logout"
-            onClick={(event) => {
-              event.preventDefault()
-              document.querySelector<HTMLFormElement>('#admin-logout')?.submit()
-            }}
-          >
-            Logout
-          </a>
         </nav>
-        <form id="admin-logout" action="/logout" method="post" hidden>
+        <Form route="session.destroy" method="post" className="inline-form admin-logout">
           <CsrfField />
-        </form>
+          <button type="submit" className="subscribe-btn">
+            Keluar
+          </button>
+        </Form>
       </div>
     </aside>
   )
