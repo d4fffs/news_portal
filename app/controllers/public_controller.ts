@@ -7,6 +7,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class PublicController {
   async home({ inertia, request }: HttpContext) {
     const query = request.input('q', '').trim()
+    const sort = request.input('sort', 'desc') === 'asc' ? 'asc' : 'desc'
     const searchPattern = `%${query}%`
     const oneHourAgo = DateTime.now().minus({ hours: 1 })
     const [featured, latest, recent, articles, categories, trending] = await Promise.all([
@@ -65,7 +66,7 @@ export default class PublicController {
         )
         .preload('category')
         .preload('author')
-        .orderBy('createdAt', 'desc')
+        .orderBy('createdAt', sort)
         .paginate(request.input('page', 1), 9),
       Category.query().orderBy('name'),
       Article.query()
@@ -85,6 +86,7 @@ export default class PublicController {
       latest: latest.serialize() as any,
       recent: recent.map((article) => article.serialize()) as any,
       articles: articles.serialize() as any,
+      sort,
       categories,
       trending: trending.map((article) => ({
         ...article.serialize(),

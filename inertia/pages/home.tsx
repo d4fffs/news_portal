@@ -24,6 +24,7 @@ type Props = {
   categories: any[]
   trending?: Article[]
   query?: string
+  sort?: 'asc' | 'desc'
 }
 
 export default function Home({
@@ -31,6 +32,7 @@ export default function Home({
   recent,
   articles,
   query = '',
+  sort = 'desc',
   trending: trendingArticles = [],
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -90,6 +92,19 @@ export default function Home({
     ? articles.data.filter((article) => article.category?.slug === selectedCategory)
     : articles.data
 
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextSort = event.target.value as 'asc' | 'desc'
+    router.get(
+      '/',
+      { q: query || undefined, sort: nextSort, page: 1 },
+      {
+        preserveState: true,
+        replace: true,
+        preserveScroll: true,
+      }
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="portal-page">
@@ -126,13 +141,17 @@ export default function Home({
               ) : (
                 <div className="empty-filter-state">Belum ada berita dalam 1 jam terakhir.</div>
               )}
-              <section
-                id="article-section"
-                className="section-heading article-section-heading"
-              >
+              <section id="article-section" className="section-heading article-section-heading">
                 <div>
                   <h2>Artikel</h2>
                 </div>
+                <label className="sort-control">
+                  <span>Urutkan</span>
+                  <select value={sort} onChange={handleSortChange} aria-label="Urutkan artikel">
+                    <option value="desc">Terbaru</option>
+                    <option value="asc">Terlama</option>
+                  </select>
+                </label>
               </section>
               {olderArticles.length > 0 ? (
                 <div className="article-grid">
